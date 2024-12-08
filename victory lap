@@ -1,0 +1,32 @@
+/*
+   This is a victory lap code designed to make a robot go around a table. 
+   The robot follows a predefined motion pattern: moving forward and 
+   turning left at specific intervals. The forward() and leftForward() 
+   functions handle the robot's movements at specified speeds.
+*/
+
+void setup() {
+  // Initialize motors or pins for robot control
+}
+
+void loop() {
+  forward(100);       // Move the robot forward at speed 100
+  delay(6000);        // Wait for 6 seconds to cover a straight distance
+  leftForward(100);   // Turn the robot left at speed 100
+  delay(2900);        // Wait for 2.9 seconds to complete the first turn
+  forward(100);       // Move forward again at speed 100
+  delay(2000);        // Wait for 2 seconds to cover another straight distance
+  leftForward(100);   // Turn the robot left again at speed 100
+  delay(2900);        // Wait for 2.9 seconds to complete the second turn
+}
+
+// Define your functions
+void forward(int speed) {
+  // Moves the robot forward at the given speed
+  // Implementation to control motors goes here
+}
+
+void leftForward(int speed) {
+  // Turns the robot left at the given speed
+  // Implementation to control motors goes here
+}
