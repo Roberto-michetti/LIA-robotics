@@ -1,0 +1,85 @@
+/*
+   This code is designed to control a line-following robot using three 
+   sensors: left, middle, and right. Based on the sensor readings, the 
+   robot can stop, move forward, turn left, turn right, or perform a 
+   U-turn when no line is detected. The motor speeds and directions 
+   are controlled using PWM pins for precise movements.
+*/
+
+int Left1 = 7;   // Pin for left motor direction
+int Right1 = 8;  // Pin for right motor direction
+int speeda = 5;  // Pin for left motor speed (PWM)
+int speedb = 6;  // Pin for right motor speed (PWM)
+int stb = 3;     // Pin to enable the motors (STB pin)
+
+void setup() { 
+  pinMode(Left1, OUTPUT);    // Set left motor direction pin as output
+  pinMode(Right1, OUTPUT);   // Set right motor direction pin as output
+  pinMode(stb, OUTPUT);      // Set STB pin as output
+} 
+
+void loop() { 
+  int right = analogRead(A0);   // Read sensor value for right sensor
+  int middle = analogRead(A1);  // Read sensor value for middle sensor
+  int left = analogRead(A2);    // Read sensor value for left sensor
+
+  if (right == 1018 && middle == 1018 && left == 1018) { 
+    Stop(); // If all sensors detect no line, stop the motors
+  } 
+
+  if (middle >= 750 && middle <= 790) { 
+    Forward(); // If middle sensor detects the line, move forward
+  } 
+
+  if (right >= 750 && right <= 800) { 
+    Right(); // If right sensor detects the line, turn right
+  } 
+
+  if (left >= 690 && left <= 750) { 
+    Left(); // If left sensor detects the line, turn left
+  } 
+
+  if (middle < 500 && right < 500 && left < 500) { 
+    Uturn(); // If no sensor detects the line, perform a U-turn
+  }   
+}
+
+void Stop() { 
+  digitalWrite(Left1, HIGH);   // Stop left motor
+  digitalWrite(Right1, HIGH);  // Stop right motor
+  analogWrite(speeda, 0);      // Set speed of left motor to 0
+  analogWrite(speedb, 0);      // Set speed of right motor to 0
+  digitalWrite(stb, HIGH);     // Keep STB pin enabled
+} 
+
+void Uturn() { 
+  digitalWrite(Left1, HIGH);   // Set left motor to forward direction
+  analogWrite(speeda, 85);     // Speed for left motor during U-turn
+  digitalWrite(Right1, LOW);   // Set right motor to reverse direction
+  analogWrite(speedb, 50);     // Speed for right motor during U-turn
+  digitalWrite(stb, HIGH);     // Enable the motors
+} 
+
+void Forward() {    
+  digitalWrite(Left1, HIGH);   // Set left motor to forward direction
+  digitalWrite(Right1, HIGH);  // Set right motor to forward direction
+  analogWrite(speeda, 50);     // Set speed of left motor to 50
+  analogWrite(speedb, 50);     // Set speed of right motor to 50
+  digitalWrite(stb, HIGH);     // Enable the motors
+} 
+
+void Right() {    
+  digitalWrite(Left1, HIGH);   // Set left motor to forward direction
+  digitalWrite(Right1, HIGH);  // Set right motor to forward direction
+  analogWrite(speeda, 0);      // Stop left motor
+  analogWrite(speedb, 50);     // Set speed of right motor to 50
+  digitalWrite(stb, HIGH);     // Enable the motors
+}   
+
+void Left() {    
+  digitalWrite(Left1, HIGH);   // Set left motor to forward direction
+  digitalWrite(Right1, HIGH);  // Set right motor to forward direction
+  analogWrite(speeda, 50);     // Set speed of left motor to 50
+  analogWrite(speedb, 0);      // Stop right motor
+  digitalWrite(stb, HIGH);     // Enable the motors
+}   
