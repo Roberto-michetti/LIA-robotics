@@ -1,0 +1,130 @@
+/*
+   This code is designed to control a robot using an IR remote. 
+   The IR remote has 9 distinct functions, each corresponding to a 
+   specific movement pattern for the robot. The robot can move in 
+   various directions including forward, backward, left, right, 
+   forward-right, forward-left, backward-right, and backward-left. 
+   Additionally, the robot can stop when the corresponding command 
+   is sent. The IR receiver decodes the signals from the remote and 
+   executes the appropriate motor commands to perform the desired actions.
+*/
+
+#include <IRremote.h>  // Include the IRremote library for IR signal decoding.
+
+const int IR_RECEIVE_PIN = 9; // Define the pin connected to the IR receiver.
+
+// Function prototypes
+void Forward();        // Function to move forward
+void Stop();           // Function to stop
+void Right();          // Function to turn right
+void Back();           // Function to move backward
+void Left();           // Function to turn left
+void forwardright();   // Function for moving forward-right
+void forwardleft();    // Function for moving forward-left
+void backleft();       // Function for moving backward-left
+void backright();      // Function for moving backward-right
+
+void setup() {
+  Serial.begin(9600); // Initialize serial communication for debugging.
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK); // Initialize the IR receiver on the specified pin.
+  Serial.println("IR Receiver Initialized. Waiting for input..."); // Debug message.
+
+  pinMode(7, OUTPUT); // Set pin 7 as output for Motor 1 direction control.
+  pinMode(3, OUTPUT); // Set pin 3 as output for Motor 2 direction control.
+  pinMode(8, OUTPUT); // Set pin 8 as output for Motor 2 secondary control.
+}
+
+void loop() {
+  if (IrReceiver.decode()) { // Check if an IR signal is received and decoded.
+    Serial.print("Received HEX Value: 0x"); // Print the HEX value received.
+    Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX); // Print the actual HEX value.
+    Serial.print("Received Protocol: "); // Print the protocol of the IR signal.
+    Serial.println(IrReceiver.decodedIRData.protocol); // Print the protocol type.
+
+    // Handle the IR commands based on the received HEX values
+    if (IrReceiver.decodedIRData.decodedRawData == 0xB946FF00) { Forward(); }        // Move forward
+    if (IrReceiver.decodedIRData.decodedRawData == 0xBF40FF00) { Stop(); }           // Stop
+    if (IrReceiver.decodedIRData.decodedRawData == 0xBC43FF00) { Right(); }          // Turn right
+    if (IrReceiver.decodedIRData.decodedRawData == 0xEA15FF00) { Back(); }           // Move backward
+    if (IrReceiver.decodedIRData.decodedRawData == 0xBB44FF00) { Left(); }           // Turn left
+    if (IrReceiver.decodedIRData.decodedRawData == 0xF20DFF00) { forwardright(); }   // Move forward-right
+    if (IrReceiver.decodedIRData.decodedRawData == 0xE916FF00) { forwardleft(); }    // Move forward-left
+    if (IrReceiver.decodedIRData.decodedRawData == 0xF708FF00) { backleft(); }       // Move backward-left
+    if (IrReceiver.decodedIRData.decodedRawData == 0xA55AFF00) { backright(); }      // Move backward-right
+
+    IrReceiver.resume(); // Prepare the IR receiver to listen for the next signal.
+  }
+}
+
+// Function definitions
+void Forward() {
+  digitalWrite(7, HIGH);        // Set Motor 1 forward
+  analogWrite(5, 100);          // Set Motor 1 speed to 100
+  digitalWrite(3, HIGH);        // Set Motor 2 forward
+  digitalWrite(8, HIGH);        // Set Motor 2 secondary forward
+  analogWrite(6, 100);          // Set Motor 2 speed to 100
+}
+
+void Stop() {
+  digitalWrite(7, HIGH);        // Set Motor 1 to stop
+  analogWrite(5, 0);            // Set Motor 1 speed to 0
+  digitalWrite(3, HIGH);        // Set Motor 2 to stop
+  digitalWrite(8, HIGH);        // Set Motor 2 secondary to stop
+  analogWrite(6, 0);            // Set Motor 2 speed to 0
+}
+
+void Right() {
+  digitalWrite(7, LOW);         // Set Motor 1 reverse
+  analogWrite(5, 100);          // Set Motor 1 speed to 100
+  digitalWrite(3, HIGH);        // Set Motor 2 forward
+  digitalWrite(8, HIGH);        // Set Motor 2 secondary forward
+  analogWrite(6, 100);          // Set Motor 2 speed to 100
+}
+
+void Back() {
+  digitalWrite(7, LOW);         // Set Motor 1 reverse
+  analogWrite(5, 100);          // Set Motor 1 speed to 100
+  digitalWrite(3, HIGH);        // Set Motor 2 forward
+  digitalWrite(8, LOW);         // Set Motor 2 secondary reverse
+  analogWrite(6, 100);          // Set Motor 2 speed to 100
+}
+
+void Left() {
+  digitalWrite(7, HIGH);        // Set Motor 1 forward
+  analogWrite(5, 100);          // Set Motor 1 speed to 100
+  digitalWrite(3, HIGH);        // Set Motor 2 forward
+  digitalWrite(8, LOW);         // Set Motor 2 secondary reverse
+  analogWrite(6, 100);          // Set Motor 2 speed to 100
+}
+
+void forwardright() {
+  digitalWrite(7, HIGH);        // Set Motor 1 forward
+  analogWrite(5, 50);           // Set Motor 1 speed to 50
+  digitalWrite(3, HIGH);        // Set Motor 2 forward
+  digitalWrite(8, HIGH);        // Set Motor 2 secondary forward
+  analogWrite(6, 100);          // Set Motor 2 speed to 100
+}
+
+void forwardleft() {
+  digitalWrite(7, HIGH);        // Set Motor 1 forward
+  analogWrite(5, 100);          // Set Motor 1 speed to 100
+  digitalWrite(3, HIGH);        // Set Motor 2 forward
+  digitalWrite(8, HIGH);        // Set Motor 2 secondary forward
+  analogWrite(6, 50);           // Set Motor 2 speed to 50
+}
+
+void backleft() {
+  digitalWrite(7, LOW);         // Set Motor 1 reverse
+  analogWrite(5, 100);          // Set Motor 1 speed to 100
+  digitalWrite(3, HIGH);        // Set Motor 2 forward
+  digitalWrite(8, LOW);         // Set Motor 2 secondary reverse
+  analogWrite(6, 50);           // Set Motor 2 speed to 50
+}
+
+void backright() {
+  digitalWrite(7, LOW);         // Set Motor 1 reverse
+  analogWrite(5, 50);           // Set Motor 1 speed to 50
+  digitalWrite(3, HIGH);        // Set Motor 2 forward
+  digitalWrite(8, LOW);         // Set Motor 2 secondary reverse
+  analogWrite(6, 100);          // Set Motor 2 speed to 100
+}
